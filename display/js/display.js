@@ -587,8 +587,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     
     // Tabelle mit Lineup-Daten füllen
-    const populateLineup = (lineupData, tbody) => {
-        tbody.innerHTML = ""; // Tabelle zurücksetzen
+    const populateLineup = (lineupData, tbody) => {    
         lineupData.forEach(player => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
@@ -598,7 +597,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
             tbody.appendChild(tr);
         });
-    };
+    };      
 
     const handleFileUpload = (event, targetElement) => {
         if (!event || !event.target || !event.target.files) {
@@ -613,40 +612,51 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
     
+        const inputId = event.target.id; // ID des Inputs identifizieren
         const fileType = file.type;
     
-        if (fileType === "text/csv" || file.name.endsWith(".csv")) {
-            // CSV-Datei hochladen
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const csvData = parseCSV(e.target.result); // CSV-Daten parsen
-                    populateLineup(csvData, targetElement); // Tabelle füllen
-                    console.log(`CSV-Datei erfolgreich verarbeitet: ${file.name}`);
-                    log(`CSV-Datei verarbeitet: ${file.name}`);
-                } catch (error) {
-                    console.error("Fehler beim Verarbeiten der CSV-Datei:", error.message);
-                    alert("Fehler: Die hochgeladene CSV-Datei ist ungültig. Bitte überprüfen Sie das Format.");
-                }
-            };
-            reader.readAsText(file);
-        } else if (fileType.startsWith("image/")) {
-            // Bilddatei hochladen
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                resizeImage(e.target.result, 50, 50, (resizedDataUrl) => {
-                    if (targetElement.tagName === "IMG") {
-                        targetElement.src = resizedDataUrl; // Zeige das skalierte Bild an
-                        console.log("Logo erfolgreich skaliert und geladen.");
-                    } else {
-                        console.error("Das Ziel-Element unterstützt keine Bilder:", targetElement);
+        if (inputId === "csv-input-team-a" || inputId === "csv-input-team-b") {
+            // **Nur CSV-Verarbeitung für Lineup**
+            if (fileType === "text/csv" || file.name.endsWith(".csv")) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const csvData = parseCSV(e.target.result);    
+                        if (inputId === "csv-input-team-a") {
+                            populateLineup(csvData, document.querySelector("#lineup-team-a tbody"));
+                        } else if (inputId === "csv-input-team-b") {
+                            populateLineup(csvData, document.querySelector("#lineup-team-b tbody"));
+                        }
+                    } catch (error) {
+                        console.error("Fehler beim CSV-Parsing:", error);
+                        alert("Fehlerhafte CSV-Datei. Bitte überprüfen.");
                     }
-                });
-            };
-            reader.readAsDataURL(file);
+                };
+                reader.readAsText(file);
+            } else {
+                alert("Bitte laden Sie eine gültige CSV-Datei hoch.");
+            }
+        } else if (inputId === "team-a-logo" || inputId === "team-b-logo" || inputId === "association-logo") {
+            // **Nur Bildverarbeitung für Logos**
+            if (fileType.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    resizeImage(e.target.result, 50, 50, (resizedDataUrl) => {
+                        if (targetElement.tagName === "IMG") {
+                            targetElement.src = resizedDataUrl;
+                            console.log("Bild erfolgreich skaliert und gesetzt.");
+                        } else {
+                            console.error("Das Ziel-Element unterstützt keine Bilder:", targetElement);
+                        }
+                    });
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert("Bitte laden Sie eine gültige Bilddatei hoch.");
+            }
         } else {
-            alert("Bitte laden Sie eine gültige Bild- oder CSV-Datei hoch.");
-            console.warn("Ungültiger Dateityp:", fileType);
+            alert("Ungültiger Datei-Upload. Bitte überprüfen.");
+            console.warn("Nicht unterstützter Dateityp oder Eingabefeld:", inputId, fileType);
         }
     };
     
@@ -839,6 +849,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const teamAColorDisplay = document.getElementById("team-a-color-display");
     const teamBColorInput = document.getElementById("team-b-color");
     const teamBColorDisplay = document.getElementById("team-b-color-display");
+
+    const updateScoreboard = () => {
+        // Team A
+        const teamAName = elements.teamAInput.value.trim() || "Team A";
+        const teamAScore = elements.teamAScore.innerText;
+        const teamALogo = elements.teamALogoPreview.src;
+    
+        document.getElementById("team-a-name-display").innerText = teamAName;
+        document.getElementById("team-a-score").innerText = teamAScore;
+        document.getElementById("team-a-logo-preview").src = teamALogo;
+    
+        // Team B
+        const teamBName = elements.teamBInput.value.trim() || "Team B";
+        const teamBScore = elements.teamBScore.innerText;
+        const teamBLogo = elements.teamBLogoPreview.src;
+    
+        document.getElementById("team-b-name-display").innerText = teamBName;
+        document.getElementById("team-b-score").innerText = teamBScore;
+        document.getElementById("team-b-logo-preview").src = teamBLogo;
+    
+        // Current Period
+        document.getElementById("current-period").innerText = elements.currentPeriod.innerText;
+    };
     
     // **Event-Listener**
     elements.toggle.addEventListener("click", () => (isRunning ? stop() : start()));
@@ -888,8 +921,13 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.toggleEmptyNetTeamA.addEventListener("click", () => toggleEmptyNet("A"));
     elements.toggleEmptyNetTeamB.addEventListener("click", () => toggleEmptyNet("B"));
     // Event-Listener für CSV-Uploads
-    elements.csvInputTeamA.addEventListener("change", (event) => handleFileUpload(event, elements.lineupTeamA));
-    elements.csvInputTeamB.addEventListener("change", (event) => handleFileUpload(event, elements.lineupTeamB));
+    document.getElementById("csv-input-team-a").addEventListener("change", (event) => {
+        handleFileUpload(event, document.querySelector("#lineup-team-a tbody"));
+    });
+    
+    document.getElementById("csv-input-team-b").addEventListener("change", (event) => {
+        handleFileUpload(event, document.querySelector("#lineup-team-b tbody"));
+    });
     elements.resetAllButton.addEventListener("click", resetAll);
     elements.fullStrengthGlobal.addEventListener("change", calculateCurrentStrength);
     // Farbänderung für Team A
@@ -925,13 +963,12 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.setDateTimeButton.addEventListener("click", () => {
         toggleInputField(elements.dateTimeInput, elements.setDateTimeButton, "Datum und Startzeit");
     });    
-
-    elements.teamALogo.addEventListener("change", (event) => {
-        handleFileUpload(event, elements.teamALogoPreview); // Vorschau für Team A
+    document.getElementById("team-a-logo").addEventListener("change", (event) => {
+        handleFileUpload(event, document.getElementById("team-a-logo-preview"));
     });
     
-    elements.teamBLogo.addEventListener("change", (event) => {
-        handleFileUpload(event, elements.teamBLogoPreview); // Vorschau für Team B
+    document.getElementById("team-b-logo").addEventListener("change", (event) => {
+        handleFileUpload(event, document.getElementById("team-b-logo-preview"));
     });
     
     document.getElementById("association-logo").addEventListener("change", (event) => {
@@ -947,10 +984,22 @@ document.addEventListener("DOMContentLoaded", () => {
         updateTeamLabel("B");
     });    
 
+    elements.setTeamAButton.addEventListener("click", updateScoreboard);
+    elements.setTeamBButton.addEventListener("click", updateScoreboard);
+    elements.increaseTeamAScore.addEventListener("click", updateScoreboard);
+    elements.decreaseTeamAScore.addEventListener("click", updateScoreboard);
+    elements.increaseTeamBScore.addEventListener("click", updateScoreboard);
+    elements.decreaseTeamBScore.addEventListener("click", updateScoreboard);
+    elements.nextPeriodButton.addEventListener("click", updateScoreboard);
+    elements.previousPeriodButton.addEventListener("click", updateScoreboard);
+    elements.teamALogo.addEventListener("change", updateScoreboard);
+    elements.teamBLogo.addEventListener("change", updateScoreboard);
+
     // **Initialisierung**
     updateDisplay();
     elements.toggle.innerText = "Start";
     log("Timer initialisiert.");
     updatePeriodDisplay();
     updateBreakTimerDisplay();
+    updateScoreboard();
     });

@@ -7,247 +7,205 @@
     <link rel="stylesheet" href="css/display.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Team A Section -->
-        <section id="team-a" class="section">
-            <h2>Team A</h2>
-            <!-- Info-Bereich -->
-            <div class="info">
-                <div>
-                    <label>Logo:</label>
-                    <img id="team-a-logo-preview" alt="Logo Vorschau" style="width: 50px; height: 50px; object-fit: contain;">
-                </div>
-                <div>
-                    <label>Trikotfarbe:</label>
-                    <div id="team-a-color-display" style="width: 20px; height: 20px; background-color: #000000;"></div>
-                </div>                
-                <div>
-                    <label>Punktestand:</label>
-                    <span id="team-a-score">0</span>
-                </div>
-                <div id="team-a-shootout" class="team-shootout">
-                    <h4>Shootout</h4>
-                    <!-- Hier werden die Runden dynamisch hinzugefügt -->
-                </div>
-                <div id="status-team-a" class="team-status">
-                    Status:
-                </div>
+    <div class="main-container">
+        <!-- Scoreboard -->
+        <div class="scoreboard">
+            <div class="team-score" id="team-a-display">
+                <div id="status-team-a" class="team-status"></div>
                 <div id="team-a-penalties" class="penalty-container">
                     <!-- Penalty-Timer für Team A werden hier angezeigt -->
                 </div>
+                <span id="team-a-name-display">Team A</span>
+                <img id="team-a-logo-preview" alt="Team A Logo" class="team-logo">
+                <div id="team-a-color-display" class="team-color"></div>
+                <span id="team-a-score">0</span>
+                <div id="team-a-shootout" class="team-shootout">
+                    <h4>Shootout</h4>
+                    <!-- Dynamisch hinzugefügte Runden -->
+                </div>
             </div>
-            <!-- Eingabe- und Button-Bereich -->
-            <div class="controls">
-                <div class="input-group">
-                    <label>Team Name:</label>
-                    <input id="team-a-name" type="text">
-                    <button data-action="set-team-a">OK</button>
-                    <label>Platzierung:</label>
-                    <input id="team-a-placement" type="number">
+            <div class="period">
+                <div class="timer">
+                    <span class="minutes">20</span>:<span class="seconds">00</span>
                 </div>
-                <div class="input-group">
-                    <label>Logo hochladen:</label>
-                    <input id="team-a-logo" type="file" accept="image/*">
+                <span id="current-period">1st Period</span>
+                <div>
+                    <img id="association-logo-preview" alt="Association Logo" class="association-logo">
                 </div>
-                <div class="input-group">
-                    <label>Trikotfarbe:</label>
-                    <input id="team-a-color" type="color">
+            </div>
+            <div class="team-score" id="team-b-display">
+                <div id="team-b-shootout" class="team-shootout">
+                    <h4>Shootout</h4>
+                    <!-- Dynamisch hinzugefügte Runden -->
                 </div>
-                <div class="button-row">
-                    <button data-action="increase-team-a-score">+ Score</button>
-                    <button data-action="decrease-team-a-score">- Score</button>
-                    <button data-action="add-penalty-team-a">Penalty Timer</button>
+                <span id="team-b-score">0</span>
+                <div id="team-b-color-display" class="team-color"></div>
+                <img id="team-b-logo-preview" alt="Team B Logo" class="team-logo">
+                <span id="team-b-name-display">Team B</span>
+                <div id="team-b-penalties" class="penalty-container">
+                    <!-- Penalty-Timer für Team B werden hier angezeigt -->
                 </div>
-                <div class="button-row">
-                    <h2>Shootout</h2>
-                    <button data-action="shootout-miss-team-a">Miss</button>
-                    <button data-action="shootout-score-team-a">Score</button>
-                    <button data-action="shootout-add-team-a">Add</button>
-                </div>
-                <div class="input-group">                 
-                    <button data-action="toggle-delayed-penalty-team-a">Delayed Penalty</button>
-                    <button data-action="toggle-empty-net-team-a">Empty Net</button>
-                </div>
-                <div class="lineup">
-                    <h4>Lineup</h4>
-                    <input type="file" id="csv-input-team-a" accept=".csv">
+                <div id="status-team-b" class="team-status"></div>
+            </div>
+        </div>
+
+        <!-- Drei-Spalten-Bereich -->
+        <div class="container">
+            <!-- Team A Section -->
+            <section id="team-a" class="section">
+                <div class="controls">
+                    <div class="input-group">
+                        <input id="team-a-name" type="text" placeholder="Team A Name">
+                        <button data-action="set-team-a">OK</button>
+                        <input id="team-a-placement" type="number" placeholder="Platzierung">
+                    </div>
+                    <div class="input-group">
+                        <input id="team-a-logo" type="file" accept="image/*">
+                        <input id="team-a-color" type="color">
+                    </div>
+                    <div class="input-group">
+                        <label for="csv-input-team-a">Lineup Team A hochladen (CSV):</label>
+                        <input type="file" id="csv-input-team-a" accept=".csv">
+                    </div>
+                    <div class="button-row">
+                        <button data-action="increase-team-a-score">+ Score</button>
+                        <button data-action="decrease-team-a-score">- Score</button>
+                        <button data-action="add-penalty-team-a">Penalty Timer</button>
+                    </div>
+                    <div class="button-row">
+                        <h2>Shootout</h2>
+                        <button data-action="shootout-miss-team-a">Miss</button>
+                        <button data-action="shootout-score-team-a">Score</button>
+                        <button data-action="shootout-add-team-a">Add Shootout</button>
+                    </div>
+                    <div class="button-row">
+                        <button data-action="toggle-delayed-penalty-team-a">Delayed Penalty</button>
+                        <button data-action="toggle-empty-net-team-a">Empty Net</button>
+                    </div>
+                    <!-- Team A Lineup Tabelle -->
                     <table id="lineup-team-a">
                         <thead>
                             <tr>
-                                <th>Nr</th>
+                                <th>Nummer</th>
                                 <th>Name</th>
                                 <th>Position</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <!-- Dynamisch hinzugefügte Spieler -->
+                        </tbody>
                     </table>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Global Settings -->
-        <section id="global-settings" class="section">
-            <h1>Control Panel</h1>
-            <!-- Info-Bereich -->
-            <div class="info">
-                <div class="timer">
-                    <label>Haupttimer:</label>
-                    <span class="minutes">20</span>:<span class="seconds">00</span>
-                </div>
-                <div>
-                <div class="helper-timer">
-                    <label>Hilfstimer</label>
+            <!-- Global Settings -->
+            <section id="global-settings" class="section">
+                <h1>Control Panel</h1>
+                <div class="info">
+                    <div class="helper-timer">
                         <span class="helper-minutes">00</span>:<span class="helper-seconds">00</span>
-                </div>
-                <div class="break-timer">
-                    <label>Pausenzeit</label>
+                    </div>
+                    <div class="break-timer">
                         <span class="break-minutes">10</span>:<span class="break-seconds">00</span>
+                    </div>
+                    <div id="full-strength-display" class="strength-display">
+                        Aktueller Zustand: 5 vs. 5 (Full Strength)
+                    </div>
                 </div>
-                <div class="period-display">
-                <span id="current-period">1st Period</span>
+                <div class="controls">
+                    <div class="input-group">
+                        <input id="championship" type="text" placeholder="Meisterschaft">
+                        <button data-action="set-championship">OK</button>
+                        <input id="association-logo" type="file" accept="image/*">
+                    </div>
+                    <div class="input-group">
+                        <input id="venue" type="text" placeholder="Spielort">
+                        <button data-action="set-venue">OK</button>
+                        <input id="date-time" type="datetime-local">
+                        <button data-action="set-date-time">OK</button>
+                    </div>
+                    <div class="timer-controls">
+                        <input id="break-minutes" type="number" value="10" min="0" placeholder="Pausen Minuten">
+                        <input id="break-seconds" type="number" value="0" min="0" max="59" placeholder="Pausen Sekunden">
+                        <button data-action="set-break-time">Setzen</button>
+                        <button data-action="reset-break-timer">Reset Pause</button>
+                    </div>
+                    <div class="timer-controls">
+                        <input id="max-minutes" type="number" value="20" min="0" placeholder="Maximale Minuten">
+                        <input id="max-seconds" type="number" value="0" min="0" max="59" placeholder="Maximale Sekunden">
+                        <button data-action="set-max-time">Setzen</button>
+                    </div>
+                    <div class="input-group">
+                        <select id="full-strength-global">
+                            <option value="6">6</option>
+                            <option value="5" selected>5</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                    <div class="button-row">
+                        <button data-action="toggle">Start</button>
+                        <button data-action="reset">Time Reset</button>
+                        <button data-action="increase-minutes">+ Minute</button>
+                        <button data-action="decrease-minutes">- Minute</button>
+                        <button data-action="increase-seconds">+ Sekunde</button>
+                        <button data-action="decrease-seconds">- Sekunde</button>
+                        <button data-action="next-period">+ Period</button>
+                        <button data-action="previous-period">- Period</button>
+                        <button data-action="toggle-mode">Modus: Abwärts</button>
+                        <button data-action="reset-all">Reset All</button>
+                    </div>
                 </div>
-                <div id="full-strength-display" class="strength-display">
-                    Aktueller Zustand: 5 vs. 5 (Full Strength)
-                </div>
-                <div>
-                    <label>Verband Logo:</label>
-                    <img id="association-logo-preview" alt="Logo Vorschau" style="width: 50px; height: 50px; object-fit: contain;">                                
-                </div>                
-            </div>
-            <!-- Eingabe- und Button-Bereich -->
-            <div class="controls">
-                <div class="input-group">
-                    <label>Meisterschaft:</label>
-                    <input id="championship" type="text">
-                    <button data-action="set-championship">OK</button>
-                    <label>Verband Logo:</label>
-                    <input id="association-logo" type="file" accept="image/*">
-                </div>
-                <div class="input-group">
-                    <label>Spielort:</label>
-                    <input id="venue" type="text">
-                    <button data-action="set-venue">OK</button>
-                    <label>Datum & Zeit:</label>
-                    <input id="date-time" type="datetime-local">
-                    <button data-action="set-date-time">OK</button>
-                </div>
-                <div class="timer-controls">
-                    <label>Pausen Minuten:</label>
-                    <input id="break-minutes" type="number" value="10" min="0">
-                    <label>Pausen Sekunden:</label>
-                    <input id="break-seconds" type="number" value="0" min="0" max="59">
-                    <button data-action="set-break-time">Setzen</button>
-                    <button data-action="reset-break-timer">Reset Pause</button>
-                </div>
-                <div class="timer-controls">
-                    <label>Maximale Minuten:</label>
-                    <input id="max-minutes" type="number" value="20" min="0">
-                    <label>Maximale Sekunden:</label>
-                    <input id="max-seconds" type="number" value="0" min="0" max="59">
-                    <button data-action="set-max-time">Setzen</button>
-                </div>
-                <div class="input-group">
-                    <label>Full Strength:</label>
-                    <select id="full-strength-global">
-                        <option value="6">6</option>
-                        <option value="5" selected>5</option>
-                        <option value="4">4</option>
-                        <option value="3">3</option>
-                        <option value="2">2</option>
-                    </select>
-                </div>
-                <!-- Fehlende Buttons -->
-                <div class="button-row">
-                    <button data-action="toggle">Start</button>
-                    <button data-action="reset">Time Reset</button>
-                    <button data-action="increase-minutes">+ Minute</button>
-                    <button data-action="decrease-minutes">- Minute</button>
-                    <button data-action="increase-seconds">+ Sekunde</button>
-                    <button data-action="decrease-seconds">- Sekunde</button>
-                    <button data-action="next-period">+ Period</button>
-                    <button data-action="previous-period">- Period</button>
-                    <button data-action="toggle-mode">Modus: Abwärts</button>
-                    <button data-action="reset-all">Reset All</button>
-                </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Team B Section -->
-        <section id="team-b" class="section">
-            <h2>Team B</h2>
-            <!-- Info-Bereich -->
-            <div class="info">
-                <div>
-                    <label>Logo:</label>
-                    <img id="team-b-logo-preview" alt="Logo Vorschau" style="width: 50px; height: 50px; object-fit: contain;">
-                </div>
-                <div>
-                    <label>Trikotfarbe:</label>
-                    <div id="team-b-color-display" style="width: 20px; height: 20px; background-color: #000000;"></div>
-                </div>  
-                <div>
-                    <label>Punktestand:</label>
-                    <span id="team-b-score">0</span>
-                </div>
-                <div id="team-b-shootout" class="team-shootout">
-                    <h4>Shootout</h4>
-                    <!-- Hier werden die Runden dynamisch hinzugefügt -->
-                </div>
-                <div id="status-team-b" class="team-status">
-                    Status:
-                </div>                
-                <div id="team-b-penalties" class="penalty-container">
-                    <!-- Penalty-Timer für Team A werden hier angezeigt -->
-                </div>
-            </div>
-            <!-- Eingabe- und Button-Bereich -->
-            <div class="controls">
-                <div class="input-group">
-                    <label>Team Name:</label>
-                    <input id="team-b-name" type="text">
-                    <button data-action="set-team-b">OK</button>
-                    <label>Platzierung:</label>
-                    <input id="team-b-placement" type="number">
-                </div>
-                <div class="input-group">
-                    <label>Logo hochladen:</label>
-                    <input id="team-b-logo" type="file" accept="image/*">
-                </div>
-                <div class="input-group">
-                    <label>Trikotfarbe:</label>
-                    <input id="team-b-color" type="color">
-                </div>
-                <div class="button-row">
-                    <button data-action="increase-team-b-score">+ Score</button>
-                    <button data-action="decrease-team-b-score">- Score</button>
-                    <button data-action="add-penalty-team-b">Penalty Timer</button>
-                </div>
-                <div class="button-row">
-                    <h2>Shootout</h2>
-                    <button data-action="shootout-miss-team-b">Miss</button>
-                    <button data-action="shootout-score-team-b">Score</button>
-                    <button data-action="shootout-add-team-b">Add</button>
-                </div>
-                <div class="input-group">                   
-                    <button data-action="toggle-delayed-penalty-team-b">Delayed Penalty</button>
-                    <button data-action="toggle-empty-net-team-b">Empty Net</button>
-                </div>
-                <div class="lineup">
-                    <h4>Lineup</h4>
-                    <input type="file" id="csv-input-team-b" accept=".csv">
+            <!-- Team B Section -->
+            <section id="team-b" class="section">
+                <div class="controls">
+                    <div class="input-group">
+                        <input id="team-b-name" type="text" placeholder="Team B Name">
+                        <button data-action="set-team-b">OK</button>
+                        <input id="team-b-placement" type="number" placeholder="Platzierung">
+                    </div>
+                    <div class="input-group">
+                        <input id="team-b-logo" type="file" accept="image/*">
+                        <input id="team-b-color" type="color">
+                    </div>
+                    <div class="input-group">
+                        <label for="csv-input-team-b">Lineup Team B hochladen (CSV):</label>
+                        <input type="file" id="csv-input-team-b" accept=".csv">
+                    </div>
+                    <div class="button-row">
+                        <button data-action="increase-team-b-score">+ Score</button>
+                        <button data-action="decrease-team-b-score">- Score</button>
+                        <button data-action="add-penalty-team-b">Penalty Timer</button>
+                    </div>
+                    <div class="button-row">
+                        <h2>Shootout</h2>
+                        <button data-action="shootout-miss-team-b">Miss</button>
+                        <button data-action="shootout-score-team-b">Score</button>
+                        <button data-action="shootout-add-team-b">Add Shootout</button>
+                    </div>
+                    <div class="button-row">
+                        <button data-action="toggle-delayed-penalty-team-b">Delayed Penalty</button>
+                        <button data-action="toggle-empty-net-team-b">Empty Net</button>
+                    </div>
+                    <!-- Team B Lineup Tabelle -->
                     <table id="lineup-team-b">
                         <thead>
                             <tr>
-                                <th>Nr</th>
+                                <th>Nummer</th>
                                 <th>Name</th>
                                 <th>Position</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <!-- Dynamisch hinzugefügte Spieler -->
+                        </tbody>
                     </table>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
 </body>
 <script src="js/display.js"></script>

@@ -6,224 +6,274 @@ body {
     background-color: #f4f4f9;
     color: #333;
     display: flex;
-    justify-content: center; /* Zentriert horizontal */
-    align-items: center; /* Zentriert vertikal */
-    height: 100vh; /* Nimmt die gesamte Fensterhöhe ein */
-    overflow: hidden; /* Kein Scrollen der Seite */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1, h2, h3, h4 {
+    margin: 0;
+    font-weight: bold;
 }
 
 h1 {
-    margin-top: 20px;
-    font-size: 1.5rem; /* Kleinere Schriftgröße für Titel */
+    font-size: 1.5rem;
     color: #222;
+    margin-bottom: 20px;
 }
 
-h2, h3, h4 {
+h2, h3 {
+    font-size: 1.2rem;
     color: #444;
+}
+
+h4 {
+    font-size: 1rem;
+    color: #666;
     margin-bottom: 10px;
-    font-size: 1rem; /* Kleinere Überschrift */
 }
 
-/* Große zentrale Box */
+/* Scoreboard */
+.scoreboard {
+    grid-column: 1 / -1; /* Über alle Spalten erstrecken */
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    justify-items: center;
+    width: 100%; /* Volle Breite */
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.team-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.team-score span {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.team-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-top: 5px;
+}
+
+.team-color {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    border: 1px solid #000;
+    border-radius: 4px;
+}
+
+.period {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.association-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-top: 5px;
+}
+
+/* Container Layout */
+.main-container {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    width: 95%;
+    height: 95%;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    padding: 10px;
+}
+
 .container {
-    display: grid; /* Grid-Layout */
-    grid-template-columns: repeat(3, 1fr); /* Drei gleich große Spalten */
-    gap: 10px; /* Abstand zwischen den Spalten */
-    width: 95%; /* 95% der Fensterbreite */
-    height: 95%; /* 95% der Fensterhöhe */
-    background: #ffffff; /* Weißer Hintergrund */
-    border: 1px solid #ccc; /* Rand */
-    border-radius: 12px; /* Abgerundete Ecken */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Schatten */
-    padding: 10px;
-    box-sizing: border-box; /* Padding wird in die Breite einbezogen */
-    overflow: hidden; /* Kein Scrollen innerhalb der Box */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    grid-column: 1 / -1;
 }
 
-/* Sektionen innerhalb der Box */
-#global-settings, #team-a, #team-b {
-    background: #f9f9f9; /* Heller Hintergrund */
-    border: 1px solid #ddd; /* Leichte Umrandung */
-    border-radius: 8px; /* Abgerundete Ecken */
-    padding: 10px;
-    box-sizing: border-box; /* Padding wird in die Breite einbezogen */
-    overflow: auto; /* Scrollen innerhalb der Sektionen bei Bedarf */
+/* Sections */
+#team-a, #team-b, #global-settings {
     display: flex;
-    flex-direction: column; /* Inhalte von oben nach unten */
-    justify-content: flex-start; /* Inhalte am Anfang */
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch; /* Sicherstellen, dass alle Spalten die gleiche Breite nutzen */
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow-y: auto;
+    height: 100%; /* Gleiche Höhe für alle Abschnitte */
 }
 
-/* Buttons nebeneinander anordnen */
-.button-row {
+.info {
+    margin-bottom: 10px;
+}
+
+.controls {
     display: flex;
-    gap: 5px; /* Abstand zwischen Buttons */
-    flex-wrap: wrap; /* Umbrechen, falls nötig */
+    flex-direction: column;
+    gap: 10px;
 }
 
-/* Formularelemente */
-input[type="text"], input[type="number"], input[type="datetime-local"], input[type="color"], button {
-    font-size: 0.8rem; /* Kleinere Schriftgröße */
-    padding: 4px 8px;
-    margin: 3px 0;
+/* Input Groups */
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group input[type="color"],
+.input-group input[type="file"],
+.input-group button {
+    padding: 8px;
+    font-size: 0.9rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 100%; /* Volle Breite */
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* Allgemeine Einstellungen für Buttons */
-button {
+.input-group input[type="file"] {
+    font-size: 0.8rem;
+}
+
+.input-group button {
     background-color: #007bff;
     color: white;
-    border: none;
     cursor: pointer;
-    padding: 8px; /* Gleiche Höhe */
-    width: 100%; /* Standardmäßig volle Breite */
-    font-size: 0.9rem; /* Einheitliche Schriftgröße */
-    text-align: center;
-    border-radius: 4px; /* Abgerundete Ecken */
-    box-sizing: border-box; /* Padding wird in die Breite einbezogen */
-    transition: background-color 0.3s ease; /* Glatter Hover-Effekt */
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
+.input-group button:hover {
     background-color: #0056b3;
 }
 
-/* Anordnung der Buttons nebeneinander */
+/* Buttons */
 .button-row {
-    display: flex; /* Flexbox für horizontale Anordnung */
-    justify-content: space-between; /* Platz zwischen Buttons */
-    gap: 5px; /* Abstand zwischen den Buttons */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
 }
 
 .button-row button {
-    flex: 1; /* Alle Buttons gleich breit */
-    max-width: calc(33.33% - 5px); /* Optionale Maximalbreite, z. B. bei 3 Buttons */
+    flex: 1;
+    max-width: calc(33.33% - 10px);
+    padding: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-input[type="file"] {
-    font-size: 0.8rem; /* Kleinere Schriftgröße */
+.button-row button:hover {
+    background-color: #0056b3;
 }
 
-/* Tabellen */
+/* Penalty and Shootout */
+.penalty-container {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.team-shootout {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Timer */
+.timer, .helper-timer, .break-timer {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Table Styles */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin: 5px 0;
+    margin-top: 10px;
 }
 
 table th, table td {
+    padding: 8px;
     border: 1px solid #ddd;
-    padding: 4px;
     text-align: left;
 }
 
 table th {
     background-color: #007bff;
     color: white;
-}
-
-/* Timer und Score-Anzeigen */
-.timer, .helper-timer, .break-timer, .period-display {
-    font-size: 1rem;
-    font-weight: bold;
-    text-align: center;
-    margin: 5px 0;
-}
-
-.score-controls span {
-    font-size: 1.5rem;
     font-weight: bold;
 }
 
-/* Vorschauen */
-img {
-    max-width: 100%;
-    height: auto;
-    margin-top: 5px;
-    display: block;
-}
-
-/* Break-Timer */
-.break-timer, .main-timer, .helper-timer, .period-display {
-    margin-bottom: 10px;
-}
-
-.input-group, .timer-controls, .penalty-container {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Abstand zwischen den Elementen */
-    margin-bottom: 10px; /* Abstand nach unten */
-}
-
-.input-group input,
-.input-group button,
-.timer-controls button {
-    flex: 1; /* Elemente innerhalb der Gruppe gleich breit machen */
-    max-width: 150px; /* Optionale maximale Breite für Eingabefelder */
-}
-
-.input-group input[type="color"] {
-    margin-right: 10px;
-}
-
-.penalty-container {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #f9f9f9;
-    max-height: 150px; /* Optionale maximale Höhe */
-    overflow-y: auto; /* Ermöglicht Scrollen bei vielen Einträgen */
-}
-
-.strength-display {
-    font-weight: bold;
-    margin-top: 10px;
-    padding: 5px 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
-}
-
-.team-status {
-    margin-top: 10px;
-    padding: 5px 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-weight: bold;
-    text-align: center;
-}
-
-.team-shootout {
-    margin-top: 10px;
-    padding: 5px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-#team-a-color-display,
-#team-b-color-display {
-    border: 1px solid #000;
-    border-radius: 5px;
-    margin-top: 5px;
-    display: inline-block;
+#lineup-team-a tbody,
+#lineup-team-b tbody {
+    display: table-row-group; /* Sicherstellen, dass Zeilen angezeigt werden */
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .container {
-        grid-template-columns: 1fr; /* Eine Spalte auf kleinen Geräten */
-        gap: 10px; /* Abstand zwischen den Blöcken */
-        width: 100%; /* Volle Breite des Viewports */
-        height: auto; /* Automatische Höhe */
+    .main-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        gap: 10px;
     }
 
-    #global-settings, #team-a, #team-b {
-        height: auto; /* Passt sich an den Inhalt an */
-        overflow: visible; /* Kein Scrollen innerhalb der Sektionen */
+    .container {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    #team-a, #team-b, #global-settings {
+        height: auto;
+        overflow: visible;
+    }
+
+    .button-row button {
+        max-width: 100%;
     }
 }
