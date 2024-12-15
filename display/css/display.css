@@ -1,0 +1,229 @@
+/* Allgemeine Einstellungen */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    justify-content: center; /* Zentriert horizontal */
+    align-items: center; /* Zentriert vertikal */
+    height: 100vh; /* Nimmt die gesamte Fensterhöhe ein */
+    overflow: hidden; /* Kein Scrollen der Seite */
+}
+
+h1 {
+    margin-top: 20px;
+    font-size: 1.5rem; /* Kleinere Schriftgröße für Titel */
+    color: #222;
+}
+
+h2, h3, h4 {
+    color: #444;
+    margin-bottom: 10px;
+    font-size: 1rem; /* Kleinere Überschrift */
+}
+
+/* Große zentrale Box */
+.container {
+    display: grid; /* Grid-Layout */
+    grid-template-columns: repeat(3, 1fr); /* Drei gleich große Spalten */
+    gap: 10px; /* Abstand zwischen den Spalten */
+    width: 95%; /* 95% der Fensterbreite */
+    height: 95%; /* 95% der Fensterhöhe */
+    background: #ffffff; /* Weißer Hintergrund */
+    border: 1px solid #ccc; /* Rand */
+    border-radius: 12px; /* Abgerundete Ecken */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Schatten */
+    padding: 10px;
+    box-sizing: border-box; /* Padding wird in die Breite einbezogen */
+    overflow: hidden; /* Kein Scrollen innerhalb der Box */
+}
+
+/* Sektionen innerhalb der Box */
+#global-settings, #team-a, #team-b {
+    background: #f9f9f9; /* Heller Hintergrund */
+    border: 1px solid #ddd; /* Leichte Umrandung */
+    border-radius: 8px; /* Abgerundete Ecken */
+    padding: 10px;
+    box-sizing: border-box; /* Padding wird in die Breite einbezogen */
+    overflow: auto; /* Scrollen innerhalb der Sektionen bei Bedarf */
+    display: flex;
+    flex-direction: column; /* Inhalte von oben nach unten */
+    justify-content: flex-start; /* Inhalte am Anfang */
+}
+
+/* Buttons nebeneinander anordnen */
+.button-row {
+    display: flex;
+    gap: 5px; /* Abstand zwischen Buttons */
+    flex-wrap: wrap; /* Umbrechen, falls nötig */
+}
+
+/* Formularelemente */
+input[type="text"], input[type="number"], input[type="datetime-local"], input[type="color"], button {
+    font-size: 0.8rem; /* Kleinere Schriftgröße */
+    padding: 4px 8px;
+    margin: 3px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%; /* Volle Breite */
+}
+
+/* Allgemeine Einstellungen für Buttons */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 8px; /* Gleiche Höhe */
+    width: 100%; /* Standardmäßig volle Breite */
+    font-size: 0.9rem; /* Einheitliche Schriftgröße */
+    text-align: center;
+    border-radius: 4px; /* Abgerundete Ecken */
+    box-sizing: border-box; /* Padding wird in die Breite einbezogen */
+    transition: background-color 0.3s ease; /* Glatter Hover-Effekt */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Anordnung der Buttons nebeneinander */
+.button-row {
+    display: flex; /* Flexbox für horizontale Anordnung */
+    justify-content: space-between; /* Platz zwischen Buttons */
+    gap: 5px; /* Abstand zwischen den Buttons */
+}
+
+.button-row button {
+    flex: 1; /* Alle Buttons gleich breit */
+    max-width: calc(33.33% - 5px); /* Optionale Maximalbreite, z. B. bei 3 Buttons */
+}
+
+input[type="file"] {
+    font-size: 0.8rem; /* Kleinere Schriftgröße */
+}
+
+/* Tabellen */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 5px 0;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 4px;
+    text-align: left;
+}
+
+table th {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Timer und Score-Anzeigen */
+.timer, .helper-timer, .break-timer, .period-display {
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 5px 0;
+}
+
+.score-controls span {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Vorschauen */
+img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Break-Timer */
+.break-timer, .main-timer, .helper-timer, .period-display {
+    margin-bottom: 10px;
+}
+
+.input-group, .timer-controls, .penalty-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Abstand zwischen den Elementen */
+    margin-bottom: 10px; /* Abstand nach unten */
+}
+
+.input-group input,
+.input-group button,
+.timer-controls button {
+    flex: 1; /* Elemente innerhalb der Gruppe gleich breit machen */
+    max-width: 150px; /* Optionale maximale Breite für Eingabefelder */
+}
+
+.input-group input[type="color"] {
+    margin-right: 10px;
+}
+
+.penalty-container {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    max-height: 150px; /* Optionale maximale Höhe */
+    overflow-y: auto; /* Ermöglicht Scrollen bei vielen Einträgen */
+}
+
+.strength-display {
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.team-status {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.team-shootout {
+    margin-top: 10px;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#team-a-color-display,
+#team-b-color-display {
+    border: 1px solid #000;
+    border-radius: 5px;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr; /* Eine Spalte auf kleinen Geräten */
+        gap: 10px; /* Abstand zwischen den Blöcken */
+        width: 100%; /* Volle Breite des Viewports */
+        height: auto; /* Automatische Höhe */
+    }
+
+    #global-settings, #team-a, #team-b {
+        height: auto; /* Passt sich an den Inhalt an */
+        overflow: visible; /* Kein Scrollen innerhalb der Sektionen */
+    }
+}

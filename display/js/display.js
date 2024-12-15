@@ -57,14 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
         lineupTeamA: document.querySelector("#lineup-team-a tbody"),
         lineupTeamB: document.querySelector("#lineup-team-b tbody"),
         resetAllButton: document.querySelector('[data-action="reset-all"]'),
-        teamAFullStrength: document.getElementById("team-a-full-strength"),
-        teamBFullStrength: document.getElementById("team-b-full-strength"),
         fullStrengthDisplay: document.getElementById("full-strength-display"),
         championshipInput: document.getElementById("championship"),
         setChampionshipButton: document.querySelector('[data-action="set-championship"]'),
-        associationLogo: document.getElementById("association-logo"),
-        teamALogo: document.getElementById("team-a-logo"),
-        teamBLogo: document.getElementById("team-b-logo"),
         teamAColor: document.getElementById("team-a-color"),
         teamBColor: document.getElementById("team-b-color"),
         teamAPlacement: document.getElementById("team-a-placement"),
@@ -73,6 +68,13 @@ document.addEventListener("DOMContentLoaded", () => {
         setVenueButton: document.querySelector('[data-action="set-venue"]'),
         dateTimeInput: document.getElementById("date-time"),
         setDateTimeButton: document.querySelector('[data-action="set-date-time"]'),
+        associationLogo: document.getElementById("association-logo"),
+        associationLogoPreview: document.getElementById("association-logo-preview"), // Vorschau für Verband
+        teamALogo: document.getElementById("team-a-logo"),
+        teamALogoPreview: document.getElementById("team-a-logo-preview"), // Vorschau für Team A
+        teamBLogo: document.getElementById("team-b-logo"),
+        teamBLogoPreview: document.getElementById("team-b-logo-preview"), // Vorschau für Team B
+        fullStrengthGlobal: document.getElementById("full-strength-global"),
       };      
   
     let MAX_TIME = 20 * 60; // Standardwert: 20 Minuten in Sekunden
@@ -281,27 +283,23 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const updatePenaltyTimers = () => {
         const processTimers = (timers) => {
-            // Sortiere die Timer nach ihrer ID (niedrigste zuerst)
-            timers.sort((a, b) => parseInt(a.id.split("-")[1]) - parseInt(b.id.split("-")[1]));
-    
-            // Wähle die zwei niedrigsten Timer
-            const activeTimers = timers.slice(0, 2);
-    
-            // Reduziere die Zeit der aktiven Timer
-            activeTimers.forEach((timer) => {
+            timers.forEach((timer) => {
                 if (timer.time > 0) {
                     timer.time--; // Zeit reduzieren
                     timer.element.innerText = `${pad(Math.floor(timer.time / 60))}:${pad(timer.time % 60)}`;
                 } else if (timer.time === 0) {
-                    log(`Penalty-Timer erreicht 00:00 und wird automatisch gelöscht: ${timer.id}`);
+                    log(`Penalty-Timer beendet: ${timer.id}`);
                     deletePenaltyTimer(timer.id, timers, true);
                 }
             });
         };
     
-        // Aktualisiere die Penalty-Timer für beide Teams
+        // Timer für beide Teams aktualisieren
         processTimers(penaltyTimersTeamA);
         processTimers(penaltyTimersTeamB);
+    
+        // Full Strength nach Penalty-Anpassungen berechnen
+        calculateCurrentStrength();
     };
     
     const adjustTime = (amount) => {
@@ -575,16 +573,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // CSV-Datei parsen
     const parseCSV = (csvString) => {
-        const rows = csvString.split("\n").filter(row => row.trim() !== ""); // Zeilen aufteilen und leere Zeilen entfernen
-        const header = rows.shift(); // Erste Zeile (Header) entfernen
+        const rows = csvString.split("\n").filter(row => row.trim() !== ""); // Entferne leere Zeilen
+        const header = rows.shift(); // Entferne die erste Zeile (Header)
+        
         return rows.map(row => {
-            const [number, name, position] = row.split(";"); // Semikolon als Trennzeichen verwenden
-            if (!number || !name || !position) {
-                console.error("Ungültige CSV-Zeile:", row);
-                return null;
+            const columns = row.split(";").map(col => col.trim()); // Spalten mit `;` trennen
+            if (columns.length !== 3) {
+                throw new Error(`Ungültige CSV-Zeile: ${row}`);
             }
-            return { number: number.trim(), name: name.trim(), position: position.trim() };
-        }).filter(Boolean); // Ungültige Zeilen entfernen
+            const [number, name, position] = columns;
+            return { number, name, position };
+        });
     };
     
     // Tabelle mit Lineup-Daten füllen
@@ -601,41 +600,53 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // CSV-Datei für ein Team hochladen und verarbeiten
-    const handleFileUpload = (event, target) => {
+    const handleFileUpload = (event, targetElement) => {
+        if (!event || !event.target || !event.target.files) {
+            console.error("Ungültiges Event-Objekt:", event);
+            alert("Es ist ein Fehler beim Datei-Upload aufgetreten. Bitte erneut versuchen.");
+            return;
+        }
+    
         const file = event.target.files[0];
-        if (!file) return;
+        if (!file) {
+            console.warn("Keine Datei ausgewählt.");
+            return;
+        }
     
         const fileType = file.type;
     
-        // Prüfen, ob es eine CSV-Datei ist
-        if (fileType === "text/csv") {
-            const tbody = target; // Ziel-Tabelle für CSV-Inhalte
+        if (fileType === "text/csv" || file.name.endsWith(".csv")) {
+            // CSV-Datei hochladen
             const reader = new FileReader();
             reader.onload = (e) => {
-                const csvContent = e.target.result;
-                const players = parseCSV(csvContent);
-    
-                // Tabelle mit Daten füllen
-                populateLineup(players, tbody);
+                try {
+                    const csvData = parseCSV(e.target.result); // CSV-Daten parsen
+                    populateLineup(csvData, targetElement); // Tabelle füllen
+                    console.log(`CSV-Datei erfolgreich verarbeitet: ${file.name}`);
+                    log(`CSV-Datei verarbeitet: ${file.name}`);
+                } catch (error) {
+                    console.error("Fehler beim Verarbeiten der CSV-Datei:", error.message);
+                    alert("Fehler: Die hochgeladene CSV-Datei ist ungültig. Bitte überprüfen Sie das Format.");
+                }
             };
             reader.readAsText(file);
-            log(`CSV-Datei hochgeladen: ${file.name}`);
-        }
-        // Prüfen, ob es ein Bild ist
-        else if (fileType.startsWith("image/")) {
-            const imgElement = target; // Ziel-Element für das Bild
+        } else if (fileType.startsWith("image/")) {
+            // Bilddatei hochladen
             const reader = new FileReader();
             reader.onload = (e) => {
-                imgElement.src = e.target.result; // Bild anzeigen
+                resizeImage(e.target.result, 50, 50, (resizedDataUrl) => {
+                    if (targetElement.tagName === "IMG") {
+                        targetElement.src = resizedDataUrl; // Zeige das skalierte Bild an
+                        console.log("Logo erfolgreich skaliert und geladen.");
+                    } else {
+                        console.error("Das Ziel-Element unterstützt keine Bilder:", targetElement);
+                    }
+                });
             };
             reader.readAsDataURL(file);
-            log(`Bild hochgeladen: ${file.name}`);
-        }
-        // Nicht unterstützter Dateityp
-        else {
-            alert("Ungültiger Dateityp. Bitte laden Sie eine CSV- oder Bilddatei hoch.");
-            log(`Ungültiger Dateityp: ${file.name}`);
+        } else {
+            alert("Bitte laden Sie eine gültige Bild- oder CSV-Datei hoch.");
+            console.warn("Ungültiger Dateityp:", fileType);
         }
     };
     
@@ -645,32 +656,32 @@ document.addEventListener("DOMContentLoaded", () => {
         clearInterval(breakInterval);
         interval = null;
         breakInterval = null;
-
+    
         // Timer-Werte zurücksetzen
         timerTime = 20 * 60; // Standardwert: 20 Minuten
         breakTime = 10 * 60; // Standardwert: 10 Minuten
         isRunning = false;
         isCountingUp = false;
-
+    
         // Punktestände zurücksetzen
         teamAScore = 0;
         teamBScore = 0;
         elements.teamAScore.innerText = teamAScore;
         elements.teamBScore.innerText = teamBScore;
-
+    
         // Penalty-Timer zurücksetzen
         penaltyTimersTeamA.length = 0;
         penaltyTimersTeamB.length = 0;
         document.getElementById("team-a-penalties").innerHTML = "";
         document.getElementById("team-b-penalties").innerHTML = "";
-
+    
         // Perioden zurücksetzen
         currentPeriodIndex = 0;
         updatePeriodDisplay();
-
+    
         // Shootout zurücksetzen
         resetShootout();
-
+    
         // Status zurücksetzen
         isDelayedPenaltyTeamA = false;
         isEmptyNetTeamA = false;
@@ -678,7 +689,7 @@ document.addEventListener("DOMContentLoaded", () => {
         isEmptyNetTeamB = false;
         elements.statusTeamA.innerText = "";
         elements.statusTeamB.innerText = "";
-
+    
         // Eingabefelder für Teamnamen zurücksetzen
         elements.teamAInput.value = "";
         elements.teamBInput.value = "";
@@ -686,24 +697,19 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.teamBInput.disabled = false;
         elements.setTeamAButton.innerText = "OK";
         elements.setTeamBButton.innerText = "OK";
-
+    
         // CSV-Lineups zurücksetzen
         elements.lineupTeamA.innerHTML = "";
         elements.lineupTeamB.innerHTML = "";
         elements.csvInputTeamA.value = "";
         elements.csvInputTeamB.value = "";
-
-        // Full-Strength zurücksetzen
-        elements.teamAFullStrength.value = 5;
-        elements.teamBFullStrength.value = 5;
-        calculateCurrentStrength();
-
+    
         // Farben und Platzierungen zurücksetzen
         elements.teamAColor.value = "#000000"; // Standardfarbe (Schwarz)
         elements.teamBColor.value = "#000000"; // Standardfarbe (Schwarz)
         elements.teamAPlacement.value = "";
         elements.teamBPlacement.value = "";
-
+    
         // Meisterschaft, Spielort und Datum/Zeit zurücksetzen
         elements.championshipInput.value = "";
         elements.championshipInput.disabled = false;
@@ -714,64 +720,71 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.dateTimeInput.value = "";
         elements.dateTimeInput.disabled = false;
         elements.setDateTimeButton.innerText = "OK";
-
+    
         // Logos zurücksetzen
         elements.associationLogo.value = "";
         elements.teamALogo.value = "";
         elements.teamBLogo.value = "";
-
+        elements.associationLogoPreview.src = ""; // Vorschau für Verband entfernen
+        elements.teamALogoPreview.src = ""; // Vorschau für Team A entfernen
+        elements.teamBLogoPreview.src = ""; // Vorschau für Team B entfernen
+        
+        if (elements.associationLogoPreview) {
+            elements.associationLogoPreview.src = ""; // Setze das Vorschaubild zurück
+        }
+    
         // Timer-Display aktualisieren
         updateDisplay();
         updateBreakTimerDisplay();
-
+    
         // Steuerbuttons aktualisieren
         elements.toggle.innerText = "Start";
-
+    
         log("Alle Werte wurden zurückgesetzt.");
-        };
-
+    };
+    
     const calculateCurrentStrength = () => {
-        // Teamstärken aus den Eingabefeldern auslesen
-        const fullStrengthA = parseInt(elements.teamAFullStrength.value, 10) || 5;
-        const fullStrengthB = parseInt(elements.teamBFullStrength.value, 10) || 5;
+        // Globale Stärke aus dem Dropdown auslesen
+        const fullStrength = parseInt(elements.fullStrengthGlobal.value, 10);
     
         // Anzahl aktiver Penalty-Timer pro Team ermitteln
         const activePenaltyTimersA = penaltyTimersTeamA.filter(timer => timer.time > 0).length;
-        const activePenaltyTimersB = penaltyTimersTeamB.filter(timer => timer.time > 0).length;
+        const activePenaltyTimersB = penaltyTimersTeamB.filter(timer => timer.time > 0).length;    
     
         // Aktuelle Stärke berechnen
-        const currentStrengthA = fullStrengthA - activePenaltyTimersA;
-        const currentStrengthB = fullStrengthB - activePenaltyTimersB;
+        const currentStrengthA = Math.max(2, fullStrength - activePenaltyTimersA);
+        const currentStrengthB = Math.max(2, fullStrength - activePenaltyTimersB);    
     
-        // Status berechnen
-        let status = `${currentStrengthA} vs. ${currentStrengthB}`;
+        let status = "";
     
-        // Spezielle Szenarien hinzufügen
-        if (currentStrengthA === currentStrengthB) {
-            if (currentStrengthA === 4) {
-                status += ` = 4 on 4`;
-            } else if (currentStrengthA === 3) {
-                status += ` = 3 on 3`;
-            } else {
-                status += ` = Full Strength`;
+        // Szenarien
+        if (activePenaltyTimersA > 0 && activePenaltyTimersB === 0) {
+            // Powerplay für Team B
+            status = `${currentStrengthA} vs. ${currentStrengthB} (Powerplay für Team B)`;
+    
+            if (activePenaltyTimersA >= 2) {
+                status = `${currentStrengthA} vs. ${currentStrengthB} (2 Man Adv für Team B)`;
             }
-        } else {
-            status += ` = ${currentStrengthA} on ${currentStrengthB}`;
-        }
+        } else if (activePenaltyTimersB > 0 && activePenaltyTimersA === 0) {
+            // Powerplay für Team A
+            status = `${currentStrengthA} vs. ${currentStrengthB} (Powerplay für Team A)`;
     
-        // 2-Man Advantage oder Unterbesetzung
-        if (currentStrengthA < 3) {
-            status += ` | Team A unterbesetzt`;
-        }
-        if (currentStrengthB < 3) {
-            status += ` | Team B unterbesetzt`;
+            if (activePenaltyTimersB >= 2) {
+                status = `${currentStrengthA} vs. ${currentStrengthB} (2 Man Adv für Team A)`;
+            }
+        } else if (activePenaltyTimersA > 0 && activePenaltyTimersB > 0) {
+            // Beide Teams haben Strafen
+            status = `${currentStrengthA} on ${currentStrengthB}`;
+        } else {
+            // Beide Teams sind Full Strength
+            status = `${currentStrengthA} vs. ${currentStrengthB} (Full Strength)`;
         }
     
         // Anzeige aktualisieren
         elements.fullStrengthDisplay.innerText = `Aktueller Zustand: ${status}`;
-        log(`Aktueller Zustand berechnet: ${status}`);
+        log(`Stärke berechnet: Full Strength=${fullStrength}, Team A=${currentStrengthA}, Team B=${currentStrengthB}`);
     };
-
+    
     const toggleInputField = (inputElement, buttonElement, label) => {
         if (buttonElement.innerText === "OK") {
             const value = inputElement.value.trim();
@@ -787,6 +800,45 @@ document.addEventListener("DOMContentLoaded", () => {
             buttonElement.innerText = "OK";
         }
     };    
+
+    const resizeImage = (imageDataUrl, maxWidth, maxHeight, callback) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+    
+            // Berechne den Skalierungsfaktor
+            const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+    
+            // Zeichne das Bild auf das Canvas
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    
+            // Rückgabe als Data URL
+            callback(canvas.toDataURL("image/png"));
+        };
+        img.onerror = () => {
+            console.error("Bild konnte nicht geladen werden:", imageDataUrl);
+            alert("Fehler beim Laden des Bildes. Bitte erneut versuchen.");
+        };
+        img.src = imageDataUrl; // Setze die Bildquelle
+    };
+
+    const updateTeamLabel = (team) => {
+        const inputElement = team === "A" ? elements.teamAInput : elements.teamBInput;
+        const labelElement = document.querySelector(`#team-${team.toLowerCase()} h2`);
+        
+        // Aktualisiere das Label mit dem eingegebenen Text oder setze den Standard zurück
+        labelElement.innerText = inputElement.value.trim() || `Team ${team}`;
+    };
+    
+    
+    // Farbeingabe-Elemente und deren Vorschau für beide Teams
+    const teamAColorInput = document.getElementById("team-a-color");
+    const teamAColorDisplay = document.getElementById("team-a-color-display");
+    const teamBColorInput = document.getElementById("team-b-color");
+    const teamBColorDisplay = document.getElementById("team-b-color-display");
     
     // **Event-Listener**
     elements.toggle.addEventListener("click", () => (isRunning ? stop() : start()));
@@ -839,13 +891,19 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.csvInputTeamA.addEventListener("change", (event) => handleFileUpload(event, elements.lineupTeamA));
     elements.csvInputTeamB.addEventListener("change", (event) => handleFileUpload(event, elements.lineupTeamB));
     elements.resetAllButton.addEventListener("click", resetAll);
-    elements.teamAFullStrength.addEventListener("change", calculateCurrentStrength);
-    elements.teamBFullStrength.addEventListener("change", calculateCurrentStrength);
-    elements.teamAColor.addEventListener("input", () => {
-        log(`Team A Trikotfarbe geändert: ${elements.teamAColor.value}`);
+    elements.fullStrengthGlobal.addEventListener("change", calculateCurrentStrength);
+    // Farbänderung für Team A
+    teamAColorInput.addEventListener("input", () => {
+        const selectedColor = teamAColorInput.value;
+        teamAColorDisplay.style.backgroundColor = selectedColor;
+        console.log(`Team A Trikotfarbe geändert zu: ${selectedColor}`);
     });
-    elements.teamBColor.addEventListener("input", () => {
-        log(`Team B Trikotfarbe geändert: ${elements.teamBColor.value}`);
+
+    // Farbänderung für Team B
+    teamBColorInput.addEventListener("input", () => {
+        const selectedColor = teamBColorInput.value;
+        teamBColorDisplay.style.backgroundColor = selectedColor;
+        console.log(`Team B Trikotfarbe geändert zu: ${selectedColor}`);
     });
     elements.teamAPlacement.addEventListener("input", () => {
         log(`Team A Platzierung geändert: ${elements.teamAPlacement.value}`);
@@ -868,17 +926,26 @@ document.addEventListener("DOMContentLoaded", () => {
         toggleInputField(elements.dateTimeInput, elements.setDateTimeButton, "Datum und Startzeit");
     });    
 
-    elements.associationLogo.addEventListener("change", () => {
-        handleFileUpload(elements.associationLogo, "Verband Logo");
+    elements.teamALogo.addEventListener("change", (event) => {
+        handleFileUpload(event, elements.teamALogoPreview); // Vorschau für Team A
     });
     
-    elements.teamALogo.addEventListener("change", () => {
-        handleFileUpload(elements.teamALogo, "Team A Logo");
+    elements.teamBLogo.addEventListener("change", (event) => {
+        handleFileUpload(event, elements.teamBLogoPreview); // Vorschau für Team B
     });
     
-    elements.teamBLogo.addEventListener("change", () => {
-        handleFileUpload(elements.teamBLogo, "Team B Logo");
+    document.getElementById("association-logo").addEventListener("change", (event) => {
+        handleFileUpload(event, document.getElementById("association-logo-preview"));
+    });    
+    elements.setTeamAButton.addEventListener("click", () => {
+        toggleTeamNameEdit("Team A");
+        updateTeamLabel("A");
     });
+    
+    elements.setTeamBButton.addEventListener("click", () => {
+        toggleTeamNameEdit("Team B");
+        updateTeamLabel("B");
+    });    
 
     // **Initialisierung**
     updateDisplay();
