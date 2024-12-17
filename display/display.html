@@ -47,6 +47,10 @@
                 </div>
                 <div id="status-team-b" class="team-status"></div>
             </div>
+            <!-- Diashow-Container -->
+            <div id="slideshow-container" class="hidden">
+                <img id="slideshow-image" alt="Slideshow Image">
+            </div>         
         </div>
 
         <!-- Drei-Spalten-Bereich -->
@@ -155,6 +159,11 @@
                         <button data-action="previous-period">- Period</button>
                         <button data-action="toggle-mode">Modus: Abwärts</button>
                         <button data-action="reset-all">Reset All</button>
+                    </div>
+                    <div class="controls">
+                        <input type="file" id="image-folder" webkitdirectory directory>
+                        <button id="toggle-slideshow">Toggle Slideshow</button>
+                        <button id="toggle-scoreboard" data-action="toggle-scoreboard">Toggle Scoreboard</button>
                     </div>
                 </div>
             </section>

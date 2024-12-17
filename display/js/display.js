@@ -75,6 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
         teamBLogo: document.getElementById("team-b-logo"),
         teamBLogoPreview: document.getElementById("team-b-logo-preview"), // Vorschau für Team B
         fullStrengthGlobal: document.getElementById("full-strength-global"),
+        slideshowContainer: document.getElementById("slideshow-container"),
+        scoreboard: document.querySelector(".scoreboard"),
+        toggleSlideshowButton: document.getElementById("toggle-slideshow"),
+        toggleScoreboardButton: document.getElementById("toggle-scoreboard"),
+        slideshowImage: document.getElementById("slideshow-image"),
       };      
   
     let MAX_TIME = 20 * 60; // Standardwert: 20 Minuten in Sekunden
@@ -99,6 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let isEmptyNetTeamA = false;
     let isDelayedPenaltyTeamB = false;
     let isEmptyNetTeamB = false;
+    let images = [];
+    let currentIndex = 0;
+    let slideshowInterval;
 
     // **Hilfsfunktionen**
     const log = (message) => {
@@ -872,6 +880,78 @@ document.addEventListener("DOMContentLoaded", () => {
         // Current Period
         document.getElementById("current-period").innerText = elements.currentPeriod.innerText;
     };
+
+    const toggleScoreboardButton = document.getElementById("toggle-scoreboard");
+
+    toggleScoreboardButton.addEventListener("click", () => {
+        elements.scoreboard.classList.toggle("hidden");
+        log("Scoreboard toggled.");
+    });
+
+    // Funktion: Lade Bilder für die Diashow
+    async function loadImages(folderPath) {
+        try {
+            // Beispielbilder (ersetze durch Logik zur dynamischen Bildladefunktion)
+            images = [
+                `${folderPath}/sponsor1.jpg`,
+                `${folderPath}/sponsor2.jpg`,
+                `${folderPath}/sponsor3.jpg`
+            ];
+            startSlideshow();
+        } catch (error) {
+            console.error("Fehler beim Laden der Bilder:", error);
+        }
+    }
+    
+    // Button: Ein-/Ausblenden der Diashow
+    toggleSlideshowButton.addEventListener("click", () => {
+        // Prüfe, ob die hidden-Klasse gesetzt ist
+        if (elements.slideshowContainer.classList.contains("hidden")) {
+            // Entferne hidden, zeige den Container, starte die Slideshow
+            elements.slideshowContainer.classList.remove("hidden");
+            startSlideshow();
+            console.log("Slideshow gestartet.");
+        } else {
+            // Füge hidden hinzu, verstecke den Container, stoppe die Slideshow
+            elements.slideshowContainer.classList.add("hidden");
+            stopSlideshow();
+            console.log("Slideshow gestoppt und ausgeblendet.");
+        }
+    });
+
+    // Funktion: Starte Diashow
+    function startSlideshow() {
+        if (images.length > 0 && !slideshowInterval) {
+            elements.slideshowImage.src = images[currentIndex];
+            slideshowInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % images.length;
+                elements.slideshowImage.src = images[currentIndex];
+            }, 3000); // Alle 3 Sekunden wechseln
+            console.log("Slideshow läuft.");
+        } else {
+            console.warn("Keine Bilder verfügbar oder Slideshow läuft bereits.");
+        }
+    }
+    
+    function stopSlideshow() {
+        if (slideshowInterval) {
+            clearInterval(slideshowInterval);
+            slideshowInterval = null;
+            console.log("Slideshow gestoppt.");
+        } else {
+            console.warn("Slideshow läuft nicht.");
+        }
+    }
+    
+    // Button: Ein-/Ausblenden des Scoreboards
+    toggleScoreboardButton.addEventListener("click", () => {
+        scoreboard.classList.toggle("hidden");
+    });
+
+
+
+    // Lade die Bilder (Pfad anpassen)
+    loadImages("path/to/sponsors");
     
     // **Event-Listener**
     elements.toggle.addEventListener("click", () => (isRunning ? stop() : start()));
@@ -994,6 +1074,22 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.previousPeriodButton.addEventListener("click", updateScoreboard);
     elements.teamALogo.addEventListener("change", updateScoreboard);
     elements.teamBLogo.addEventListener("change", updateScoreboard);
+    document.getElementById("image-folder").addEventListener("change", (event) => {
+        const files = event.target.files;
+        images = Array.from(files).map(file => URL.createObjectURL(file)); // URLs der Bilder generieren
+        startSlideshow(); // Starte die Diashow mit den hochgeladenen Bildern
+    });  
+    elements.slideshowImage = document.getElementById("slideshow-image");  
+    elements.toggleSlideshowButton = document.getElementById("toggle-slideshow");
+    elements.toggleSlideshowButton.addEventListener("click", () => {
+        if (elements.slideshowContainer.classList.contains("hidden")) {
+            elements.slideshowContainer.classList.remove("hidden");
+            startSlideshow();
+        } else {
+            elements.slideshowContainer.classList.add("hidden");
+            stopSlideshow();
+        }
+    }); 
 
     // **Initialisierung**
     updateDisplay();
@@ -1003,3 +1099,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateBreakTimerDisplay();
     updateScoreboard();
     });
+
+    const toggleSlideshowButton = document.getElementById("toggle-slideshow");
+
